@@ -22,6 +22,26 @@ npm start
 http://localhost:3000
 ```
 
+### Запуск в Docker (Node + Postgres)
+
+1. Установите Docker и Docker Compose.
+2. В корне проекта выполните:
+
+```bash
+docker-compose up --build
+```
+
+3. Откройте в браузере:
+
+```text
+http://localhost:3000
+```
+
+В этом режиме:
+
+- контейнер `db` поднимает Postgres с БД `valentine`;
+- контейнер `app` запускает Node-приложение и подключается к БД через переменные окружения из `docker-compose.yml`.
+
 ### Как подставить имя конкретного человека
 
 В файле `public/script.js` в самом верху есть строка:
