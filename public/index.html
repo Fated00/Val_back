@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Моя валентинка для тебя 💌</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="background">
+      <div class="heart heart--1"></div>
+      <div class="heart heart--2"></div>
+      <div class="heart heart--3"></div>
+      <div class="heart heart--4"></div>
+      <div class="heart heart--5"></div>
+    </div>
+
+    <main class="page">
+      <section class="card">
+        <div class="card__glow"></div>
+        <div class="card__top">
+          <div class="avatar">
+            <div class="avatar__inner">
+              <span class="avatar__emoji">💘</span>
+            </div>
+          </div>
+          <p class="card__label">Секретная валентинка</p>
+          <h1 class="card__title">
+            <span id="person-name">...</span>, пойдёшь со мной на свидание?
+          </h1>
+          <p class="card__subtitle">
+            Обещаю тёплый вечер, много смеха и чуть-чуть волнения.
+          </p>
+        </div>
+
+        <div class="card__question">
+          <p>Выбирай честно, но помни: я уже очень хочу тебя увидеть 💗</p>
+        </div>
+
+        <div class="card__actions">
+          <button id="btn-yes" class="btn btn--primary">
+            Да, конечно! ✨
+          </button>
+          <button id="btn-maybe" class="btn btn--ghost">
+            Я подумаю 🤍
+          </button>
+        </div>
+
+        <form id="message-form" class="message">
+          <label for="message" class="message__label">
+            Можешь оставить мне пару слов (например, когда тебе удобно):
+          </label>
+          <textarea
+            id="message"
+            class="message__input"
+            rows="3"
+            placeholder="Напиши здесь свой ответ или пожелание..."
+          ></textarea>
+        </form>
+
+        <p class="card__hint">
+          Этот сайт создан специально для тебя. Никто другой его не увидит, обещаю 💌
+        </p>
+      </section>
+
+      <div id="toast" class="toast" aria-live="polite"></div>
+
+      <div id="overlay" class="overlay hidden">
+        <div class="overlay__content">
+          <h2 class="overlay__title">Я так и надеялся(ась)! 💞</h2>
+          <p class="overlay__text">
+            Спасибо за твой ответ. Я скоро напишу тебе, чтобы договориться о
+            времени и месте.
+          </p>
+          <button id="overlay-close" class="btn btn--primary btn--small">
+            Буду ждать 🥰
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
