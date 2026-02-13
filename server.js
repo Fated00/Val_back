@@ -20,8 +20,17 @@ const parseBoolEnv = (value) => {
   return null;
 };
 
+const dbConnectionString =
+  process.env.DATABASE_URL ||
+  process.env.EXTERNAL_DATABASE_URL ||
+  process.env.EXT_DATABASE_URL ||
+  process.env.RENDER_EXTERNAL_DATABASE_URL ||
+  process.env.DB_URL ||
+  process.env.POSTGRES_URL ||
+  '';
+
 const pgSslOverride = parseBoolEnv(process.env.PGSSL);
-const shouldUsePgSsl = pgSslOverride ?? Boolean(process.env.DATABASE_URL);
+const shouldUsePgSsl = pgSslOverride ?? Boolean(dbConnectionString);
 const localPgHost = process.env.PGHOST || 'localhost';
 const localPgPort = Number(process.env.PGPORT || 5432);
 const localPgUser = process.env.PGUSER || 'postgres';
@@ -29,9 +38,9 @@ const localPgPassword = process.env.PGPASSWORD ?? (localPgHost === 'db' ? 'postg
 const localPgDatabase = process.env.PGDATABASE || 'valentine';
 
 const pool = new Pool(
-  process.env.DATABASE_URL
+  dbConnectionString
     ? {
-        connectionString: process.env.DATABASE_URL,
+        connectionString: dbConnectionString,
         ssl: shouldUsePgSsl ? { rejectUnauthorized: false } : false,
       }
     : {
@@ -98,9 +107,10 @@ app.use(
         origin === 'http://localhost:3000' ||
         origin === 'http://127.0.0.1:5500';
       const isGithubPages = /^https?:\/\/[^/]+\.github\.io$/.test(origin);
+      const isRender = /^https?:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
       const isExplicitlyAllowed = allowedOrigins.has(origin);
 
-      if (isLocal || isGithubPages || isExplicitlyAllowed) {
+      if (isLocal || isGithubPages || isRender || isExplicitlyAllowed) {
         return cb(null, true);
       }
 

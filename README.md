@@ -53,6 +53,25 @@ http://localhost:3000/api/health
 
 Если всё ок, вернётся JSON со статусом `ok`.
 
+### Deploy на Render (Web Service + Postgres)
+
+Для Web Service в Render задайте переменную окружения с URL базы:
+
+- `DATABASE_URL` (рекомендуется), либо
+- `EXTERNAL_DATABASE_URL`, `EXT_DATABASE_URL`, `RENDER_EXTERNAL_DATABASE_URL`, `DB_URL`, `POSTGRES_URL`.
+
+Значение — ваш External Database URL вида:
+
+```text
+postgresql://user:password@host:5432/database
+```
+
+После деплоя проверьте:
+
+```text
+https://<your-render-app>.onrender.com/api/health
+```
+
 ### Как подставить имя конкретного человека
 
 В файле `public/script.js` в самом верху есть строка:

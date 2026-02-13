@@ -4,9 +4,11 @@ const PERSON_NAME = 'Ксюшенька';
 
 // Базовый URL backend-а
 // ЛОКАЛЬНО (когда вы запускаете node server.js): оставьте пустую строку => запросы пойдут на тот же origin
-// ДЛЯ GITHUB PAGES: замените на URL вашего Render-сервиса, например:
-// const API_BASE = 'https://valentine-backend.onrender.com';
-const API_BASE = 'https://ksentyz-3.onrender.com';
+// НА RENDER: оставляем пустую строку, чтобы запросы шли в тот же домен
+// ДЛЯ GITHUB PAGES: укажите URL вашего Render-сервиса:
+// const API_BASE = 'https://your-app.onrender.com';
+const isGithubPages = window.location.hostname.endsWith('github.io');
+const API_BASE = isGithubPages ? 'https://ksentyz-3.onrender.com' : '';
 
 const nameEl = document.getElementById('person-name');
 const btnYes = document.getElementById('btn-yes');
