@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Я подожду твой ответ 🤍</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="page--scroll page--maybe">
+    <div class="background">
+      <div class="heart heart--1"></div>
+      <div class="heart heart--2"></div>
+      <div class="heart heart--3"></div>
+      <div class="heart heart--4"></div>
+      <div class="heart heart--5"></div>
+    </div>
+
+    <main class="page">
+      <section class="card card--maybe">
+        <div class="card__glow"></div>
+        <div class="card__top">
+          <h1 class="card__title">Я с уважением приму любое твое решение</h1>
+          <p class="card__subtitle">
+            Спасибо, что честно ответила. Я не буду торопить и с радостью приму твое «да», если
+            оно однажды появится.
+          </p>
+        </div>
+
+        <div class="maybe-countdown">
+          <img
+            class="maybe-countdown__gif"
+            src="images/sad_cat_10s.gif"
+            alt="Грустный котик ждет ответ"
+          />
+          <div class="maybe-countdown__overlay">
+            <div id="maybe-countdown-ring" class="maybe-countdown__ring" style="--progress: 0">
+              <span id="maybe-countdown-value" class="maybe-countdown__value">10</span>
+            </div>
+            <div class="maybe-countdown__text">
+              <p class="maybe-countdown__title">10 секунд на подумать</p>
+              <p id="maybe-countdown-label" class="maybe-countdown__label">
+                Хорошо, просто подышим 10 секунд.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__actions maybe-actions">
+          <button id="maybe-continue" class="btn btn--primary" disabled>
+            Вернуться к вопросу
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

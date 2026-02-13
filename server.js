@@ -7,17 +7,27 @@ const { Pool } = require('pg');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+let lastResponse = null;
+
 // Пул подключений к Postgres
 // Локально: DATABASE_URL можно не задавать, тогда используется localhost
 // На Render или другом хостинге: ОБЯЗАТЕЛЬНО задать DATABASE_URL
+const parseBoolEnv = (value) => {
+  if (value == null) return null;
+  const normalized = String(value).trim().toLowerCase();
+  if (['1', 'true', 'yes', 'y', 'on'].includes(normalized)) return true;
+  if (['0', 'false', 'no', 'n', 'off'].includes(normalized)) return false;
+  return null;
+};
+
+const pgSslOverride = parseBoolEnv(process.env.PGSSL);
+const shouldUsePgSsl = pgSslOverride ?? Boolean(process.env.DATABASE_URL);
+
 const pool = new Pool(
   process.env.DATABASE_URL
     ? {
         connectionString: process.env.DATABASE_URL,
-        ssl:
-          process.env.NODE_ENV === 'production'
-            ? { rejectUnauthorized: false }
-            : false,
+        ssl: shouldUsePgSsl ? { rejectUnauthorized: false } : false,
       }
     : {
         host: process.env.PGHOST || 'localhost',
@@ -28,15 +38,31 @@ const pool = new Pool(
       },
 );
 
-// Разрешаем запросы с GitHub Pages и локалки
+const allowedOrigins = new Set(
+  (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean),
+);
+
+// Разрешаем запросы с GitHub Pages и локалки (и из ALLOWED_ORIGINS)
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://127.0.0.1:5500', // пример локального статического сервера
-      // сюда позже добавите точный URL GitHub Pages, например:
-      // 'https://your-name.github.io',
-    ],
+    origin(origin, cb) {
+      if (!origin) return cb(null, true); // curl / server-to-server
+
+      const isLocal =
+        origin === 'http://localhost:3000' ||
+        origin === 'http://127.0.0.1:5500';
+      const isGithubPages = /^https?:\/\/[^/]+\.github\.io$/.test(origin);
+      const isExplicitlyAllowed = allowedOrigins.has(origin);
+
+      if (isLocal || isGithubPages || isExplicitlyAllowed) {
+        return cb(null, true);
+      }
+
+      return cb(new Error(`Not allowed by CORS: ${origin}`));
+    },
   }),
 );
 
@@ -81,7 +107,10 @@ app.get('/api/last-response', (req, res) => {
   res.json({ hasResponse: true, ...lastResponse });
 });
 
-app.listen(PORT, () => {
-  console.log(`💘 Valentine server is running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`💘 Valentine server is running on http://localhost:${PORT}`);
+  });
+}
 
+module.exports = { app, pool };

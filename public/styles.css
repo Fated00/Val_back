@@ -9,7 +9,8 @@
   --accent-soft: rgba(255, 255, 255, 0.1);
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.25);
   --radius-xl: 28px;
-  --transition-fast: 0.18s ease-out;
+  --transition-fast: 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-slow: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,
@@ -31,6 +32,11 @@ body {
 body {
   background: linear-gradient(145deg, #1b0b1a 0%, #2a102a 40%, #1b0b1a 100%);
   overflow: hidden;
+}
+
+.page--scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .background {
@@ -63,6 +69,7 @@ body {
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   overflow: hidden;
+  animation: card-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .card__glow {
@@ -107,6 +114,14 @@ body {
 .avatar__emoji {
   font-size: 44px;
   filter: drop-shadow(0 6px 10px rgba(255, 0, 89, 0.33));
+}
+
+.avatar__media {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  display: block;
 }
 
 .card__label {
@@ -176,7 +191,8 @@ body {
   overflow: hidden;
   white-space: nowrap;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast),
-    background var(--transition-fast), color var(--transition-fast), opacity 0.1s ease-out;
+    background var(--transition-fast), color var(--transition-fast), opacity 0.2s ease-out,
+    filter var(--transition-fast);
 }
 
 .btn--primary {
@@ -225,6 +241,12 @@ body {
   margin-bottom: 10px;
 }
 
+.message__row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
 .message__label {
   display: block;
   font-size: 12px;
@@ -260,11 +282,68 @@ body {
   transform: translateY(-1px);
 }
 
+.message__send {
+  min-width: 122px;
+  align-self: stretch;
+  padding-inline: 18px;
+}
+
 .card__hint {
   margin: 0;
   font-size: 11px;
   color: var(--text-muted);
   text-align: center;
+}
+
+.card--yes {
+  max-width: 760px;
+}
+
+.yes-invite {
+  margin: 8px 0 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff0fb;
+  text-align: center;
+}
+
+.yes-invite__title {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.yes-invite__details {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.yes-invite__details + .yes-invite__details {
+  margin-top: 4px;
+}
+
+.yes-map {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+  min-height: 240px;
+}
+
+.yes-map iframe {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 0;
+}
+
+.yes-map > div {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .heart {
@@ -390,7 +469,7 @@ body {
   z-index: 25;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.26s ease-out;
+  transition: opacity 0.36s ease-out;
 }
 
 .overlay__content {
@@ -403,8 +482,9 @@ body {
   color: #3a122c;
   text-align: center;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
-  transform: translateY(12px);
-  transition: transform 0.26s cubic-bezier(0.19, 1, 0.22, 1);
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  transition: transform var(--transition-slow), opacity var(--transition-fast);
 }
 
 .overlay__title {
@@ -418,17 +498,182 @@ body {
   color: #6a2252;
 }
 
+.overlay__buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  position: relative;
+}
+
+.btn--runaway {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  min-width: 180px;
+  will-change: left, top, transform;
+  transition: transform 0.22s ease-out;
+}
+
+.btn--runaway:hover,
+.btn--runaway:focus-visible,
+.btn--runaway:active {
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
 .overlay--visible {
   opacity: 1;
   pointer-events: auto;
 }
 
 .overlay--visible .overlay__content {
-  transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .hidden {
   display: none;
+}
+
+.maybe-countdown {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 8px 0 14px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.maybe-countdown__ring {
+  width: 94px;
+  height: 94px;
+  border-radius: 50%;
+  position: relative;
+  flex: 0 0 auto;
+  background: conic-gradient(#ff4b7d calc(var(--progress) * 1turn), rgba(255, 255, 255, 0.35) 0);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+}
+
+.maybe-countdown__ring::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: rgba(25, 6, 28, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.maybe-countdown__value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  z-index: 1;
+}
+
+.maybe-countdown__text {
+  min-width: 0;
+  width: min(88%, 520px);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(12, 3, 16, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  text-align: center;
+}
+
+.maybe-countdown__title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.maybe-countdown__label {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.maybe-countdown__gif {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.maybe-countdown::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 3, 15, 0.22) 0%,
+    rgba(8, 3, 15, 0.34) 45%,
+    rgba(8, 3, 15, 0.62) 100%
+  );
+  z-index: 1;
+}
+
+.maybe-countdown__overlay {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px;
+}
+
+.maybe-actions {
+  margin-bottom: 0;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.18);
+}
+
+.btn--ready {
+  animation: maybe-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes maybe-pulse {
+  0%,
+  100% {
+    box-shadow: 0 10px 24px rgba(255, 0, 90, 0.4);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 14px 30px rgba(255, 0, 90, 0.62);
+    transform: translateY(-1px);
+  }
 }
 
 @media (max-width: 480px) {
@@ -448,5 +693,150 @@ body {
   .btn {
     padding-block: 10px;
   }
+
+  .maybe-countdown {
+    margin-top: 10px;
+  }
+
+  .maybe-countdown__ring {
+    width: 78px;
+    height: 78px;
+  }
+
+  .maybe-countdown__value {
+    font-size: 24px;
+  }
+
+  .maybe-countdown__overlay {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .maybe-countdown__text {
+    width: 94%;
+    padding: 8px 10px;
+  }
+
+  .maybe-countdown__title {
+    font-size: 13px;
+  }
+
+  .maybe-countdown__label {
+    font-size: 12px;
+  }
+
+  .card--yes {
+    max-width: 100%;
+  }
+
+  .yes-invite__title {
+    font-size: 17px;
+  }
+
+  .yes-invite__details {
+    font-size: 14px;
+  }
+
+  .yes-map {
+    min-height: 220px;
+  }
 }
 
+@media (max-width: 1300px) and (orientation: portrait) {
+  .page--maybe .page {
+    padding: 0;
+  }
+
+  .card--maybe {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 14px;
+    padding: 20px 16px 16px;
+  }
+
+  .page--maybe .card__top {
+    margin-bottom: 12px;
+  }
+
+  .page--maybe .maybe-countdown {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    aspect-ratio: 1 / 1;
+  }
+
+  .page--maybe .maybe-countdown__overlay {
+    padding: 18px 14px 20px;
+    gap: 14px;
+  }
+
+  .page--maybe .maybe-countdown__ring {
+    width: 110px;
+    height: 110px;
+  }
+
+  .page--maybe .maybe-countdown__value {
+    font-size: 34px;
+  }
+
+  .page--maybe .maybe-countdown__text {
+    width: min(94%, 620px);
+  }
+
+  .page--maybe .btn {
+    border-radius: 14px;
+  }
+}
+
+/* Оптимизация под широкие экраны (например, 2622x1206) */
+@media (min-width: 2000px) {
+  .page {
+    padding: 40px;
+  }
+
+  .card {
+    max-width: 640px;
+    padding: 32px 30px 24px;
+  }
+
+  .card__title {
+    font-size: 32px;
+  }
+
+  .card__subtitle {
+    font-size: 16px;
+  }
+
+  .card__hint {
+    font-size: 12px;
+  }
+}
+
+/* Дополнительная настройка под 16:9 4K экраны */
+@media (min-width: 2560px) and (min-aspect-ratio: 16/9) and (max-aspect-ratio: 18/9) {
+  .page {
+    padding: 60px;
+  }
+
+  .card {
+    max-width: 720px;
+    padding: 36px 34px 26px;
+  }
+
+  .card__title {
+    font-size: 34px;
+  }
+
+  .card__subtitle {
+    font-size: 18px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding-block: 12px;
+  }
+}

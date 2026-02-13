@@ -30,62 +30,56 @@
               <span class="avatar__emoji">💘</span>
             </div>
           </div>
-          <p class="card__label">Секретная валентинка</p>
+          <p class="card__label">Секретное приглашение</p>
           <h1 class="card__title">
             <span id="person-name">...</span>, пойдёшь со мной на свидание?
           </h1>
           <p class="card__subtitle">
-            Обещаю тёплый вечер, много смеха и чуть-чуть волнения.
+            Я очень хочу провести с тобой один особенный вечер.
           </p>
         </div>
 
         <div class="card__question">
-          <p>Выбирай честно, но помни: я уже очень хочу тебя увидеть 💗</p>
+          <p>Выбирай сердцем. Любой твой ответ для меня важен 💗</p>
         </div>
 
-        <div class="card__actions">
+        <div class="card__actions card__actions--three">
           <button id="btn-yes" class="btn btn--primary">
-            Да, конечно! ✨
+            Да, пойду ✨
           </button>
           <button id="btn-maybe" class="btn btn--ghost">
             Я подумаю 🤍
           </button>
+          <button id="btn-no" class="btn btn--ghost btn--danger">
+            Нет, прости 💔
+          </button>
         </div>
 
-        <form id="message-form" class="message">
-          <label for="message" class="message__label">
-            Можешь оставить мне пару слов (например, когда тебе удобно):
-          </label>
-          <textarea
-            id="message"
-            class="message__input"
-            rows="3"
-            placeholder="Напиши здесь свой ответ или пожелание..."
-          ></textarea>
-        </form>
-
         <p class="card__hint">
-          Этот сайт создан специально для тебя. Никто другой его не увидит, обещаю 💌
+          Этот сайт создан только для тебя. Спасибо, что ты есть 💌
         </p>
       </section>
 
       <div id="toast" class="toast" aria-live="polite"></div>
 
-      <div id="overlay" class="overlay hidden">
+      <div id="no-overlay" class="overlay hidden">
         <div class="overlay__content">
-          <h2 class="overlay__title">Я так и надеялся(ась)! 💞</h2>
+          <h2 class="overlay__title">Ты правда уверена? 🥺</h2>
           <p class="overlay__text">
-            Спасибо за твой ответ. Я скоро напишу тебе, чтобы договориться о
-            времени и месте.
+            Может, всё-таки дашь нашему свиданию шанс? Я обещаю быть максимально бережным(ой).
           </p>
-          <button id="overlay-close" class="btn btn--primary btn--small">
-            Буду ждать 🥰
-          </button>
+          <div class="overlay__buttons">
+            <button id="no-cancel" class="btn btn--ghost">
+              Ладно, не буду нажимать
+            </button>
+          </div>
         </div>
+        <button id="no-confirm" class="btn btn--primary btn--runaway">
+          Да, я уверена
+        </button>
       </div>
     </main>
 
     <script src="script.js"></script>
   </body>
 </html>
-
