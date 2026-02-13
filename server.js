@@ -122,6 +122,7 @@ app.use(
 app.use(bodyParser.json());
 
 // (Опционально) если хотите, чтобы Render тоже отдавал статику
+app.use('/photos', express.static(path.join(__dirname, 'photos')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API для сохранения ответа

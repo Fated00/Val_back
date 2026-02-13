@@ -64,7 +64,7 @@ async function sendResponse(answer, customMessage = null) {
     return true;
   } catch (e) {
     console.error(e);
-    showToast('Кажется, что-то пошло не так. Но твой ответ я всё равно запомню в сердце 💗');
+    showToast('Кажется, что-то пошло не так. Но я все равно люблю тебя 💗');
     return false;
   }
 }
@@ -274,7 +274,7 @@ btnWishSend?.addEventListener('click', async () => {
     return;
   }
 
-  showToast('Пожелание отправлено 💌');
+  showToast('Пожелание отправлено, спасибо любимая');
   if (wishMessageInput) {
     wishMessageInput.value = '';
   }
