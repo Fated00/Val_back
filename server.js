@@ -22,6 +22,11 @@ const parseBoolEnv = (value) => {
 
 const pgSslOverride = parseBoolEnv(process.env.PGSSL);
 const shouldUsePgSsl = pgSslOverride ?? Boolean(process.env.DATABASE_URL);
+const localPgHost = process.env.PGHOST || 'localhost';
+const localPgPort = Number(process.env.PGPORT || 5432);
+const localPgUser = process.env.PGUSER || 'postgres';
+const localPgPassword = process.env.PGPASSWORD ?? (localPgHost === 'db' ? 'postgres' : '');
+const localPgDatabase = process.env.PGDATABASE || 'valentine';
 
 const pool = new Pool(
   process.env.DATABASE_URL
@@ -30,13 +35,51 @@ const pool = new Pool(
         ssl: shouldUsePgSsl ? { rejectUnauthorized: false } : false,
       }
     : {
-        host: process.env.PGHOST || 'localhost',
-        port: Number(process.env.PGPORT || 5432),
-        user: process.env.PGUSER || 'postgres',
-        password: process.env.PGPASSWORD || '',
-        database: process.env.PGDATABASE || 'valentine',
+        host: localPgHost,
+        port: localPgPort,
+        user: localPgUser,
+        password: localPgPassword,
+        database: localPgDatabase,
       },
 );
+
+const CREATE_RESPONSES_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS responses (
+    id BIGSERIAL PRIMARY KEY,
+    answer TEXT NOT NULL,
+    message TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+`;
+
+let dbReady = false;
+let dbInitPromise = null;
+let dbInitError = null;
+
+async function initializeDatabase() {
+  if (dbReady) return true;
+  if (dbInitPromise) return dbInitPromise;
+
+  dbInitPromise = (async () => {
+    try {
+      await pool.query('SELECT 1');
+      await pool.query(CREATE_RESPONSES_TABLE_SQL);
+      dbReady = true;
+      dbInitError = null;
+      console.log('✅ Postgres connected and schema is ready');
+      return true;
+    } catch (error) {
+      dbReady = false;
+      dbInitError = error;
+      console.error('❌ Failed to initialize Postgres:', error.message || error);
+      return false;
+    } finally {
+      dbInitPromise = null;
+    }
+  })();
+
+  return dbInitPromise;
+}
 
 const allowedOrigins = new Set(
   (process.env.ALLOWED_ORIGINS || '')
@@ -79,14 +122,21 @@ app.post('/api/response', async (req, res) => {
     return res.status(400).json({ error: 'answer is required' });
   }
 
-  const at = new Date().toISOString();
+  const isDbReady = await initializeDatabase();
+  if (!isDbReady) {
+    return res.status(503).json({ error: 'db_unavailable' });
+  }
 
   try {
     // Сохраняем в БД
-    await pool.query(
-      'INSERT INTO responses(answer, message, created_at) VALUES ($1, $2, $3)',
-      [answer, message || '', at],
+    const insertResult = await pool.query(
+      'INSERT INTO responses(answer, message, created_at) VALUES ($1, $2, NOW()) RETURNING created_at',
+      [answer, message || ''],
     );
+    const insertedAt = insertResult.rows[0]?.created_at;
+    const at = insertedAt instanceof Date
+      ? insertedAt.toISOString()
+      : new Date(insertedAt || Date.now()).toISOString();
 
     lastResponse = { answer, message: message || '', at };
 
@@ -107,9 +157,29 @@ app.get('/api/last-response', (req, res) => {
   res.json({ hasResponse: true, ...lastResponse });
 });
 
+app.get('/api/health', async (req, res) => {
+  if (dbReady) {
+    return res.json({ status: 'ok', db: 'ready' });
+  }
+
+  await initializeDatabase();
+
+  if (dbReady) {
+    return res.json({ status: 'ok', db: 'ready' });
+  }
+
+  return res.status(503).json({
+    status: 'degraded',
+    db: 'unavailable',
+    reason: dbInitError?.message || 'db_not_ready',
+  });
+});
+
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`💘 Valentine server is running on http://localhost:${PORT}`);
+  initializeDatabase().finally(() => {
+    app.listen(PORT, () => {
+      console.log(`💘 Valentine server is running on http://localhost:${PORT}`);
+    });
   });
 }
 

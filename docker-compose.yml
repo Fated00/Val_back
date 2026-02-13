@@ -8,6 +8,11 @@ services:
       POSTGRES_DB: valentine
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d valentine']
+      interval: 5s
+      timeout: 5s
+      retries: 12
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -17,7 +22,8 @@ services:
     build: .
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       # можно вместо этого задать один DATABASE_URL
       PGHOST: db
@@ -31,4 +37,3 @@ services:
 
 volumes:
   db_data:
-
